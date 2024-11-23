@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  fullName      String
+  email         String        @unique
+  password      String
+  participants  Participant[] // One-to-many relation with Participant
+  createdEvents Event[]       @relation("UserCreatedEvents")
+  createdAt     DateTime      @default(now())
+}
+
+model Event {
+  id           Int           @id @default(autoincrement())
+  userId       Int // Foreign key to User
+  creatorName  String // Full name of the user (for display purposes)
+  eventName    String
+  location     String
+  image        String? // Make image optional by adding "?"
+  dateTime     DateTime
+  maxSpots     Int
+  contact      String
+  user         User          @relation("UserCreatedEvents", fields: [userId], references: [id])
+  participants Participant[]
+}
+
+model Participant {
+  id      Int    @id @default(autoincrement())
+  name    String
+  email   String
+  phone   String
+  eventId Int
+  userId  Int? // Foreign key to User (optional in case anonymous participants are allowed)
+  event   Event  @relation(fields: [eventId], references: [id])
+  user    User?  @relation(fields: [userId], references: [id]) // Many-to-one relation with User
+}
