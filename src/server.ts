@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import cors from "cors";
 import express, { Request, Response } from "express";
 
 import eventRoutes from "./routes/eventRoutes";
@@ -11,6 +12,7 @@ const app = express();
 const port = 8080;
 
 async function main() {
+  app.use(cors());
   app.use(express.json());
 
   app.use("/uploads", express.static("uploads")); // Serve static files from the 'uploads' folder
