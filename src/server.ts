@@ -10,6 +10,8 @@ import userRoutes from "./routes/userRoutes";
 
 export const prisma = new PrismaClient();
 
+// comentario deploy
+
 const app = express();
 const port = 8080;
 
