@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../server";
+import { prisma } from "..";
 
 // Sign up a participant for an event
 export const registerParticipant = async (

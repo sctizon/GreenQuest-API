@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../server";
+import { prisma } from "..";
 
 // Create an Event
 export const createEvent = async (req: Request, res: Response) => {
