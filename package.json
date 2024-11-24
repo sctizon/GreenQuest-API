@@ -6,17 +6,10 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "rimraf dist && tsc",
-    "ts.check": "tsc --project tsconfig.json",
-    "add-build": "git add dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "npx prisma migrate dev --create-only && npx prisma generate",
     "db:push": "npx prisma db push"
   },
-  "pre-commit": [
-    "ts.check",
-    "build",
-    "add-build"
-  ],
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
