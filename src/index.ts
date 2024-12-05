@@ -9,6 +9,7 @@ import winston from "winston";
 import eventRoutes from "./routes/eventRoutes";
 import participantRoutes from "./routes/participantRoutes";
 import userRoutes from "./routes/userRoutes";
+import leaderboardRoutes from "./routes/leaderboardRoutes";
 
 export const prisma = new PrismaClient();
 dotenv.config();
@@ -49,6 +50,7 @@ async function main() {
   app.use("/api/events", eventRoutes);
   app.use("/api/participants", participantRoutes);
   app.use("/api/users", userRoutes);
+  app.use("/api/leaderboard", leaderboardRoutes);
 
   // Catch unregistered routes
   app.all("*", (req: Request, res: Response) => {

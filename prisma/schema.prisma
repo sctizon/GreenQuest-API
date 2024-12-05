@@ -22,6 +22,7 @@ model User {
   participants  Participant[] // One-to-many relation with Participant
   createdEvents Event[]       @relation("UserCreatedEvents")
   createdAt     DateTime      @default(now())
+  points        Int           @default(0) // Add this line to track the points
 }
 
 model Event {
@@ -33,18 +34,18 @@ model Event {
   image        String? // Make image optional by adding "?"
   dateTime     DateTime
   maxSpots     Int
+  points        Int           @default(10)
   contact      String
+  latitude     Float?         // Added latitude field
+  longitude    Float?         // Added longitude field
   user         User          @relation("UserCreatedEvents", fields: [userId], references: [id])
   participants Participant[]
 }
 
 model Participant {
   id      Int    @id @default(autoincrement())
-  name    String
-  email   String
-  phone   String
   eventId Int
-  userId  Int? // Foreign key to User (optional in case anonymous participants are allowed)
+  userId  Int // Foreign key to User (optional in case anonymous participants are allowed)
   event   Event  @relation(fields: [eventId], references: [id])
   user    User?  @relation(fields: [userId], references: [id]) // Many-to-one relation with User
 }

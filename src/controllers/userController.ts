@@ -131,10 +131,8 @@ export const getUserProfile = async (
       token,
       process.env.JWT_SECRET || "fallback-secret-key"
     );
-    console.log("Decoded token:", decoded);
 
     const userId = (decoded as { userId: number }).userId;
-    console.log("Extracted userId:", userId);
 
     if (!userId) {
       res.status(401).json({ message: "Unauthorized: Invalid token." });
@@ -144,6 +142,11 @@ export const getUserProfile = async (
     // Fetch user data from the database
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      select: {
+        fullName: true,
+        email: true,
+        points: true,
+      }
     });
 
     if (!user) {
@@ -164,6 +167,7 @@ export const getUserProfile = async (
     res.status(200).json({
       fullName: user.fullName,
       email: user.email,
+      points: user.points,
       eventsCreated: eventsCreatedCount,
       eventsParticipated: eventsParticipatedCount,
     });

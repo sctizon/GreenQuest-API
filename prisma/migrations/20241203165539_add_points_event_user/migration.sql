@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Event" ADD COLUMN     "point" INTEGER NOT NULL DEFAULT 10;
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "points" INTEGER NOT NULL DEFAULT 0;

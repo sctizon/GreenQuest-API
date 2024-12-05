@@ -2,39 +2,72 @@ import { Request, Response } from "express";
 import { prisma } from "..";
 
 // Sign up a participant for an event
-export const registerParticipant = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { name, email, phone, eventId, userId } = req.body;
+export const registerParticipant = async (req: Request, res: Response): Promise<void> => {
+  const { eventId, userId } = req.body;
 
-  if (!name || !email || !phone || !eventId) {
-    res.status(400).json({ error: "Missing required fields" });
+  // Validate input
+  if (!eventId || !userId ) {
+    res.status(400).json({ error: 'Missing required fields: eventId or userId' });
+    return
   }
 
   try {
+    // Ensure `eventId` and `userId` are valid integers
+    const parsedEventId = parseInt(eventId, 10);
+    const parsedUserId = parseInt(userId, 10);
+
+    if (isNaN(parsedEventId) || isNaN(parsedUserId)) {
+      res.status(400).json({ error: 'Invalid eventId or userId' });
+      return
+    }
+
+    // Check if the event exists
     const event = await prisma.event.findUnique({
-      where: { id: parseInt(eventId, 10) },
+      where: { id: parsedEventId },
     });
 
     if (!event) {
-      res.status(404).json({ error: "Event not found" });
+      res.status(404).json({ error: 'Event not found' });
+      return
     }
 
+    // Check if the user is already signed up
+    const existingParticipation = await prisma.participant.findFirst({
+      where: {
+        eventId: parsedEventId,
+        userId: parsedUserId,
+      },
+    });
+
+    if (existingParticipation) {
+      res.status(400).json({ error: 'User is already signed up for this event' });
+      return
+    }
+
+    // Create the participant
     const participant = await prisma.participant.create({
       data: {
-        name,
-        email,
-        phone,
-        eventId: parseInt(eventId, 10),
-        userId: userId ? parseInt(userId, 10) : null, // Optional user ID
+        eventId: parsedEventId,
+        userId: parsedUserId,
+      },
+    });
+
+    // Add points to the user for participating in the event
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        points: {
+          increment: 10, // Add 10 points for participating in the event
+        },
       },
     });
 
     res.status(201).json(participant);
+    return
   } catch (error) {
-    console.error("Error registering participant:", error);
-    res.status(500).json({ error: "Failed to register participant" });
+    console.error('Error registering participant:', error);
+    res.status(500).json({ error: 'Failed to register participant' });
+    return
   }
 };
 
